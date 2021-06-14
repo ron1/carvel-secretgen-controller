@@ -27,8 +27,8 @@ func init() {
 			&SSHKeyList{},
 			&SecretExport{},
 			&SecretExportList{},
-			&SecretRequest{},
-			&SecretRequestList{},
+			&SecretImport{},
+			&SecretImportList{},
 		)
 		scheme.AddKnownTypes(SchemeGroupVersion,
 			&metav1.Status{},

@@ -18,8 +18,8 @@ type Interface interface {
 	SSHKeys() SSHKeyInformer
 	// SecretExports returns a SecretExportInformer.
 	SecretExports() SecretExportInformer
-	// SecretRequests returns a SecretRequestInformer.
-	SecretRequests() SecretRequestInformer
+	// SecretImports returns a SecretImportInformer.
+	SecretImports() SecretImportInformer
 }
 
 type version struct {
@@ -58,7 +58,7 @@ func (v *version) SecretExports() SecretExportInformer {
 	return &secretExportInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
-// SecretRequests returns a SecretRequestInformer.
-func (v *version) SecretRequests() SecretRequestInformer {
-	return &secretRequestInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+// SecretImports returns a SecretImportInformer.
+func (v *version) SecretImports() SecretImportInformer {
+	return &secretImportInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

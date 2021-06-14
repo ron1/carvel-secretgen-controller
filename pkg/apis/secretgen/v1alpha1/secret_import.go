@@ -8,19 +8,19 @@ import (
 
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-type SecretRequest struct {
+type SecretImport struct {
 	metav1.TypeMeta `json:",inline"`
 
 	// Standard object metadata; More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata.
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   SecretRequestSpec   `json:"spec"`
-	Status SecretRequestStatus `json:"status"`
+	Spec   SecretImportSpec   `json:"spec"`
+	Status SecretImportStatus `json:"status"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-type SecretRequestList struct {
+type SecretImportList struct {
 	metav1.TypeMeta `json:",inline"`
 
 	// Standard list metadata.
@@ -28,18 +28,18 @@ type SecretRequestList struct {
 	// +optional
 	metav1.ListMeta `json:"metadata,omitempty"`
 
-	Items []SecretRequest `json:"items"`
+	Items []SecretImport `json:"items"`
 }
 
-type SecretRequestSpec struct {
+type SecretImportSpec struct {
 	FromNamespace string `json:"fromNamespace,omitempty"`
 }
 
-type SecretRequestStatus struct {
+type SecretImportStatus struct {
 	GenericStatus `json:",inline"`
 }
 
-func (r SecretRequest) Validate() error {
+func (r SecretImport) Validate() error {
 	var errs []error
 
 	if len(r.Spec.FromNamespace) == 0 {

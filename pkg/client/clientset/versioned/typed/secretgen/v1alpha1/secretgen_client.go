@@ -16,7 +16,7 @@ type SecretgenV1alpha1Interface interface {
 	RSAKeysGetter
 	SSHKeysGetter
 	SecretExportsGetter
-	SecretRequestsGetter
+	SecretImportsGetter
 }
 
 // SecretgenV1alpha1Client is used to interact with features provided by the secretgen group.
@@ -44,8 +44,8 @@ func (c *SecretgenV1alpha1Client) SecretExports(namespace string) SecretExportIn
 	return newSecretExports(c, namespace)
 }
 
-func (c *SecretgenV1alpha1Client) SecretRequests(namespace string) SecretRequestInterface {
-	return newSecretRequests(c, namespace)
+func (c *SecretgenV1alpha1Client) SecretImports(namespace string) SecretImportInterface {
+	return newSecretImports(c, namespace)
 }
 
 // NewForConfig creates a new SecretgenV1alpha1Client for the given config.

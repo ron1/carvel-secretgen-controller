@@ -87,12 +87,12 @@ func main() {
 	}
 
 	{
-		secretRequestReconciler := reconciler.NewSecretRequestReconciler(sgClient, coreClient, log.WithName("secreq"))
-		seaCtrl, err := registerCtrl("secreq", mgr, secretRequestReconciler, &source.Kind{Type: &sgv1alpha1.SecretRequest{}})
-		exitIfErr(entryLog, "registering secreq controller", err)
+		secretImportReconciler := reconciler.NewSecretImportReconciler(sgClient, coreClient, log.WithName("secimp"))
+		seaCtrl, err := registerCtrl("secimp", mgr, secretImportReconciler, &source.Kind{Type: &sgv1alpha1.SecretImport{}})
+		exitIfErr(entryLog, "registering secimp controller", err)
 
-		err = secretRequestReconciler.AttachWatches(seaCtrl)
-		exitIfErr(entryLog, "registering secreq controller: secret watching", err)
+		err = secretImportReconciler.AttachWatches(seaCtrl)
+		exitIfErr(entryLog, "registering secimp controller: secret watching", err)
 	}
 
 	entryLog.Info("starting manager")

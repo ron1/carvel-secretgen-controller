@@ -1,9 +1,9 @@
 package e2e
 
 import (
+	"reflect"
 	"strings"
 	"testing"
-	"reflect"
 	"time"
 
 	"github.com/ghodss/yaml"
@@ -54,7 +54,7 @@ spec:
   - sg-test3
 ---
 apiVersion: secretgen.k14s.io/v1alpha1
-kind: SecretRequest
+kind: SecretImport
 metadata:
   name: secret
   namespace: sg-test2
@@ -62,7 +62,7 @@ spec:
   fromNamespace: sg-test1
 ---
 apiVersion: secretgen.k14s.io/v1alpha1
-kind: SecretRequest
+kind: SecretImport
 metadata:
   name: secret
   namespace: sg-test3
@@ -130,7 +130,7 @@ stringData:
 
 	logger.Section("Check imported secrets were updated", func() {
 		// TODO proper waiting
-		time.Sleep(5*time.Second)
+		time.Sleep(5 * time.Second)
 
 		for _, ns := range []string{"sg-test2", "sg-test3"} {
 			out := waitForSecretInNs(t, kubectl, ns, "secret")
@@ -161,7 +161,7 @@ stringData:
 			RunOpts{NoNamespace: true})
 
 		// TODO proper waiting
-		time.Sleep(5*time.Second)
+		time.Sleep(5 * time.Second)
 
 		for _, ns := range []string{"sg-test2", "sg-test3"} {
 			_, err := kubectl.RunWithOpts([]string{"get", "secret", "secret", "-n", ns},
