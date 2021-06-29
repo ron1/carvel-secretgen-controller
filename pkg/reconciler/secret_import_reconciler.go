@@ -133,8 +133,9 @@ func (r *SecretImportReconciler) reconcile(
 	notOfferedMsg := "Export was not offered (even though requested)"
 	notAllowedMsg := "Export was not allowed (even though requested)"
 
+	secretName := r.getSourceSecretName(secretImport)
 	secretExport, err := r.sgClient.SecretgenV1alpha1().SecretExports(
-		secretImport.Spec.FromNamespace).Get(secretImport.Name, metav1.GetOptions{})
+		secretImport.Spec.FromNamespace).Get(secretName, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// TODO Should we actually delete offered secret that we previously created?
@@ -180,8 +181,9 @@ func (r *SecretImportReconciler) isExportAllowed(
 func (r *SecretImportReconciler) copyAssociatedSecret(
 	secretImport *sgv1alpha1.SecretImport) (reconcile.Result, error) {
 
+	secretName := r.getSourceSecretName(secretImport)
 	srcSecret, err := r.coreClient.CoreV1().Secrets(
-		secretImport.Spec.FromNamespace).Get(secretImport.Name, metav1.GetOptions{})
+		secretImport.Spec.FromNamespace).Get(secretName, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// TODO Should we actually delete offered secret that we previously created?
@@ -214,7 +216,7 @@ func (r *SecretImportReconciler) copyAssociatedSecret(
 			return reconcile.Result{Requeue: true}, fmt.Errorf("Getting imported secret: %s", err)
 		}
 
-		secret.AssociteExistingSecret(existingSecret)
+		secret.AssociateExistingSecret(existingSecret)
 
 		_, err = r.coreClient.CoreV1().Secrets(secretImport.Namespace).Update(secret.AsSecret())
 		if err != nil {
@@ -240,6 +242,15 @@ func (r *SecretImportReconciler) deleteAssociatedSecret(
 		return fmt.Errorf("Deleting associated secret: %s", err)
 	}
 	return nil
+}
+
+func (r *SecretImportReconciler) getSourceSecretName(
+	secretImport *sgv1alpha1.SecretImport) string {
+
+	if len(secretImport.Spec.FromName) != 0 {
+		return secretImport.Spec.FromName
+	}
+	return secretImport.Name
 }
 
 func (r *SecretImportReconciler) updateStatus(

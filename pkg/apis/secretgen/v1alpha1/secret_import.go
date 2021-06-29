@@ -33,6 +33,7 @@ type SecretImportList struct {
 
 type SecretImportSpec struct {
 	FromNamespace string `json:"fromNamespace,omitempty"`
+	FromName      string `json:"fromName,omitempty"`
 }
 
 type SecretImportStatus struct {

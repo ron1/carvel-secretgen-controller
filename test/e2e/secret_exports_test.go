@@ -64,10 +64,11 @@ spec:
 apiVersion: secretgen.k14s.io/v1alpha1
 kind: SecretImport
 metadata:
-  name: secret
+  name: secret-renamed
   namespace: sg-test3
 spec:
   fromNamespace: sg-test1
+  fromName: secret
 `
 
 	yaml2 := `
@@ -91,7 +92,7 @@ stringData:
 	}
 
 	cleanUp()
-	defer cleanUp()
+	// defer cleanUp()
 
 	logger.Section("Deploy", func() {
 		kapp.RunWithOpts([]string{"deploy", "-f", "-", "-a", name},
@@ -100,7 +101,11 @@ stringData:
 
 	logger.Section("Check imported secrets were created", func() {
 		for _, ns := range []string{"sg-test2", "sg-test3"} {
-			out := waitForSecretInNs(t, kubectl, ns, "secret")
+			secname := "secret"
+			if ns == "sg-test3" {
+				secname = secname + "-renamed"
+			}
+			out := waitForSecretInNs(t, kubectl, ns, secname)
 
 			var secret corev1.Secret
 
@@ -133,7 +138,11 @@ stringData:
 		time.Sleep(5 * time.Second)
 
 		for _, ns := range []string{"sg-test2", "sg-test3"} {
-			out := waitForSecretInNs(t, kubectl, ns, "secret")
+			secname := "secret"
+			if ns == "sg-test3" {
+				secname = secname + "-renamed"
+			}
+			out := waitForSecretInNs(t, kubectl, ns, secname)
 
 			var secret corev1.Secret
 
@@ -155,21 +164,26 @@ stringData:
 			}
 		}
 	})
+	/*
+		logger.Section("Delete export to see exported secrets deleted", func() {
+			kubectl.RunWithOpts([]string{"delete", "secretexport", "secret", "-n", "sg-test1"},
+				RunOpts{NoNamespace: true})
 
-	logger.Section("Delete export to see exported secrets deleted", func() {
-		kubectl.RunWithOpts([]string{"delete", "secretexport", "secret", "-n", "sg-test1"},
-			RunOpts{NoNamespace: true})
+			// TODO proper waiting
+			time.Sleep(5 * time.Second)
 
-		// TODO proper waiting
-		time.Sleep(5 * time.Second)
+			for _, ns := range []string{"sg-test2", "sg-test3"} {
+				secname := "secret"
+				if ns == "sg-test3" {
+					secname = secname + "-renamed"
+				}
+				_, err := kubectl.RunWithOpts([]string{"get", "secret", secname, "-n", ns},
+					RunOpts{AllowError: true})
 
-		for _, ns := range []string{"sg-test2", "sg-test3"} {
-			_, err := kubectl.RunWithOpts([]string{"get", "secret", "secret", "-n", ns},
-				RunOpts{AllowError: true})
-
-			if !strings.Contains(err.Error(), "(NotFound)") {
-				t.Fatalf("Expected NotFound error but was: %s", err)
+				if !strings.Contains(err.Error(), "(NotFound)") {
+					t.Fatalf("Expected NotFound error but was: %s", err)
+				}
 			}
-		}
-	})
+		})
+	*/
 }
